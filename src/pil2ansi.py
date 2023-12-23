@@ -1,6 +1,6 @@
 import shutil
 from dataclasses import dataclass
-
+from typing import Protocol, Tuple, Literal
 from PIL import Image
 
 # Get terminal width/height 
@@ -9,15 +9,75 @@ TERMINAL_HEIGHT = shutil.get_terminal_size().lines
 
 #pallets type
 
+PIL_COLOR = Literal['RGBA', 'LA']
+
+class Palette(Protocol):
+    def pixel_to_char(self, pixel: Tuple, alpha: bool) -> str:
+        ...
+
+    @property
+    def pil_color(self) -> PIL_COLOR:
+        ...
+
+@dataclass
+class PaletteColor():
+    pil_color: PIL_COLOR = 'RGBA'
+    def pixel_to_char(self, pixel: Tuple[int,int,int,int], alpha=False) -> str:
+        r,g,b,a = pixel
+
+        if a == 0 and alpha == True:
+            return f"\033[0m \033[0m"
+
+        return f"\033[0;48;2;{r};{g};{b}m \033[0m"
+
+@dataclass
+class PaletteGrayscale():
+    pil_color: PIL_COLOR = 'LA'
+    def pixel_to_char(self, pixel: Tuple[int,int], alpha=False) -> str:
+        p,a = pixel
+
+        if a == 0 and alpha == True:
+            return f"\033[0m \033[0m"
+
+        num_values = 24
+        val = 255 - int(p * num_values / 255)
+        return f"\033[0;48;5;{val}m \033[0m"
+
+@dataclass
+class PaletteGrayscaleInverted():
+    pil_color: PIL_COLOR = 'LA'
+    def pixel_to_char(self, pixel: Tuple[int,int], alpha=False) -> str:
+        p,a = pixel
+
+        if a == 0 and alpha == True:
+            return f"\033[0m \033[0m"
+
+        num_values = 24
+        val = 232 + (255 - (255 - int(p * num_values / 255)))
+        return f"\033[0;48;5;{val}m \033[0m"
+
+@dataclass
+class PaletteAscii():
+    pil_color: PIL_COLOR = 'LA'
+    ascii_palette = [' ', '.', ':', '+', '*', '?', '%', '@']
+    def pixel_to_char(self, pixel: Tuple[int,int], alpha=False) -> str:
+        p,a = pixel
+
+        if a == 0 and alpha == True:
+            return f"\033[0m \033[0m"
+
+        num_values = len(self.ascii_palette)
+        val = int(p * num_values / 255)
+        return self.ascii_palette[val]
+
 @dataclass
 class Palettes:
-    grayscale =  [ f"\033[0;48;5;{i}m \033[0m" for i in range(232, 256) ],
-    grayscale_inverted = [ f"\033[0;48;5;{i}m \033[0m" for i in range(255, 231, -1) ],
-    ascii = [' ', '.', ':', '+', '*', '?', '%', '@']
-    #color = [ f"\033[0;48;2;{r};{g};{b}m \033[0m" for r in range(0, 256, 16) for g in range(0, 256, 16) for b in range(0, 256, 16) ]
-    color = []
- 
-def convert_img(img_path: str, palette=Palettes.color, width=TERMINAL_WIDTH, alpha=False) -> str:
+    color = PaletteColor()
+    grayscale =  PaletteGrayscale()
+    grayscale_inverted = PaletteGrayscaleInverted()
+    ascii = PaletteAscii()
+
+def convert_img(img_path: str, palette: Palette = Palettes.color, width=TERMINAL_WIDTH, alpha=False) -> str:
     """Convert image to ascii art using PIL"""
     img = Image.open(img_path)
 
@@ -28,36 +88,13 @@ def convert_img(img_path: str, palette=Palettes.color, width=TERMINAL_WIDTH, alp
     
     print(f"Image size: {img.width}x{img.height}")
 
-    if palette == Palettes.color:
-        img = img.convert('RGBA')
-    else:
-        # Convert to greyscale
-        img = img.convert('LA')
+    img = img.convert(palette.pil_color)
 
     pixels = img.getdata()
     ascii_str = ''
-    if palette == Palettes.color:
-        ansi_chars_rgb = []
-        for r, g, b, a in pixels:
-            if a == 0 and alpha == True:
-                ansi_chars_rgb.append(f"\033[0m \033[0m")
-            else:
-                ansi_chars_rgb.append(f"\033[0;48;2;{r};{g};{b}m \033[0m")
-
-        for i, c in enumerate(ansi_chars_rgb):
-            if i % img.width == 0: 
-                ascii_str += '\n'
-            ascii_str += c
-    else:
-        chars = palette
-        num_chars = len(chars)
-        for i,(p,a) in enumerate(pixels):
-            idx = int(num_chars * (p / 255))
-            idx = min(idx, num_chars - 1)
-            if i % img.width == 0: 
-                ascii_str += '\n'
-            if a == 0 and alpha == True:
-                ascii_str += '\033[0m \033[0m'
-            else:
-                ascii_str += chars[idx]
+    for i,p in enumerate(pixels):
+        if i % img.width == 0: 
+            ascii_str += '\n'
+        else:
+            ascii_str += palette.pixel_to_char(p, alpha)
     return ascii_str
