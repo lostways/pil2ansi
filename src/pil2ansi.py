@@ -77,12 +77,11 @@ class Palettes:
     grayscale_inverted = PaletteGrayscaleInverted()
     ascii = PaletteAscii()
 
-def convert_img(img_path: str, palette: Palette = Palettes.color, width=TERMINAL_WIDTH, alpha=False) -> str:
+def convert_img(img: Image.Image, palette: Palette = Palettes.color, width=TERMINAL_WIDTH, alpha=False) -> str:
     """Convert image to ascii art using PIL"""
-    img = Image.open(img_path)
 
     # Resize image and maintain aspect ratio
-    new_width = min(width, TERMINAL_WIDTH)
+    new_width = min(width, img.width)
     new_height = int(new_width * img.height / img.width * 0.55)
     img = img.resize((new_width, new_height),resample=Image.NEAREST)
     
