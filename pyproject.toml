@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pil2ansi"
+version = "0.0.1-dev1"
+description = "Convert PIL images to ANSI art"
+authors = [{ name = "lostways", email = "andrew@lostways.com" }]
+license = { file = "LICENSE" }
+keywords = ["pil", "pillow", "ansi", "art", "image", "terminal"]
+requires-python = ">=3.8"
+dependencies = ["pillow"]
+
+[project.urls]
+homepage = "https://github.com/lostways/pil2ansi"
