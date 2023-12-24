@@ -25,9 +25,7 @@ class Palette(Protocol):
 class PaletteColor:
     pil_color: PIL_COLOR = "RGBA"
 
-    def pixel_to_char(
-        self, pixel: Tuple[int, int, int, int]
-    ) -> str:
+    def pixel_to_char(self, pixel: Tuple[int, int, int, int]) -> str:
         r, g, b, _ = pixel
 
         return f"\033[0;48;2;{r};{g};{b}m \033[0m"
@@ -97,13 +95,13 @@ def convert_img(
     if new_width > TERMINAL_WIDTH:
         img = img.crop((0, 0, TERMINAL_WIDTH, new_height))
 
-    #print(f"Image size: {img.width}x{img.height}")
+    # print(f"Image size: {img.width}x{img.height}")
 
     img = img.convert(palette.pil_color)
 
     pixels = img.getdata()
     ascii_str: str = ""
-    transparent_char: LiteralString = f"\033[0m \033[0m" 
+    transparent_char: LiteralString = f"\033[0m \033[0m"
 
     for i, p in enumerate(pixels):
         if i % img.width == 0:
