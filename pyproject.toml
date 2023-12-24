@@ -15,3 +15,6 @@ dependencies = ["pillow"]
 
 [project.urls]
 homepage = "https://github.com/lostways/pil2ansi"
+
+[tool.black]
+line-length = 79
