@@ -11,7 +11,7 @@ parser.add_argument(
     choices=["color", "grayscale", "grayscale_inverted", "ascii"],
     default="color",
 )
-parser.add_argument("--width", help="width of output", type=int, default=None)
+parser.add_argument("--width", help="width of output", type=int, default=-1)
 parser.add_argument("--alpha", help="enable transparency", action="store_true")
 
 args = parser.parse_args()

@@ -1,6 +1,6 @@
 import shutil
 from dataclasses import dataclass
-from typing import Protocol, Tuple, Literal
+from typing import Protocol, Tuple, Literal, LiteralString
 from PIL import Image
 
 # Get terminal width/height
@@ -13,7 +13,7 @@ PIL_COLOR = Literal["RGBA", "LA"]
 
 # Palettes for converting pixels to characters
 class Palette(Protocol):
-    def pixel_to_char(self, pixel: Tuple, alpha: bool) -> str:
+    def pixel_to_char(self, pixel: Tuple) -> str:
         ...
 
     @property
@@ -26,12 +26,9 @@ class PaletteColor:
     pil_color: PIL_COLOR = "RGBA"
 
     def pixel_to_char(
-        self, pixel: Tuple[int, int, int, int], alpha=False
+        self, pixel: Tuple[int, int, int, int]
     ) -> str:
-        r, g, b, a = pixel
-
-        if a == 0 and alpha == True:
-            return f"\033[0m \033[0m"
+        r, g, b, _ = pixel
 
         return f"\033[0;48;2;{r};{g};{b}m \033[0m"
 
@@ -41,11 +38,8 @@ class PaletteGrayscale:
     invert: bool = False
     pil_color: PIL_COLOR = "LA"
 
-    def pixel_to_char(self, pixel: Tuple[int, int], alpha=False) -> str:
-        p, a = pixel
-
-        if a == 0 and alpha == True:
-            return f"\033[0m \033[0m"
+    def pixel_to_char(self, pixel: Tuple[int, int]) -> str:
+        p, _ = pixel
 
         num_values = 23
 
@@ -54,7 +48,6 @@ class PaletteGrayscale:
         else:
             val = 232 + int(p * num_values / 255)
 
-        print(f"p: {p}, val: {val}")
         return f"\033[0;48;5;{val}m \033[0m"
 
 
@@ -63,17 +56,12 @@ class PaletteAscii:
     pil_color: PIL_COLOR = "LA"
     ascii_palette = [".", ",", ":", "+", "*", "?", "%", "@"]
 
-    def pixel_to_char(self, pixel: Tuple[int, int], alpha=False) -> str:
-        p, a = pixel
-
-        if a == 0 and alpha == True:
-            return f"\033[0m \033[0m"
+    def pixel_to_char(self, pixel: Tuple[int, int]) -> str:
+        p, _ = pixel
 
         num_values = len(self.ascii_palette)  # 8
-
         val = round(p * num_values / 255) - 1
 
-        # print(f'p: {p}, val_pre: {val_pre}, val: {val}')
         return self.ascii_palette[val]
 
 
@@ -109,15 +97,20 @@ def convert_img(
     if new_width > TERMINAL_WIDTH:
         img = img.crop((0, 0, TERMINAL_WIDTH, new_height))
 
-    print(f"Image size: {img.width}x{img.height}")
+    #print(f"Image size: {img.width}x{img.height}")
 
     img = img.convert(palette.pil_color)
 
     pixels = img.getdata()
-    ascii_str = ""
+    ascii_str: str = ""
+    transparent_char: LiteralString = f"\033[0m \033[0m" 
+
     for i, p in enumerate(pixels):
         if i % img.width == 0:
             ascii_str += "\n"
+        if p[-1] == 0 and alpha == True:
+            ascii_str += transparent_char
         else:
-            ascii_str += palette.pixel_to_char(p, alpha)
+            ascii_str += palette.pixel_to_char(p)
+
     return ascii_str
