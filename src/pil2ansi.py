@@ -52,15 +52,15 @@ class PaletteGrayscale:
 @dataclass
 class PaletteAscii:
     pil_color: PIL_COLOR = "LA"
-    ascii_palette = [".", ",", ":", "+", "*", "?", "%", "@"]
+    palette_chars = [".", ",", ":", "+", "*", "?", "%", "@"]
 
     def pixel_to_char(self, pixel: Tuple[int, int]) -> str:
         p, _ = pixel
 
-        num_values = len(self.ascii_palette)  # 8
-        val = round(p * num_values / 255) - 1
+        num_values = len(self.palette_chars) - 1
+        val = round(p * num_values / 255)
 
-        return self.ascii_palette[val]
+        return self.palette_chars[val]
 
 
 @dataclass
