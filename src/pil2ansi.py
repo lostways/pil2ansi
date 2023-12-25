@@ -75,7 +75,7 @@ def convert_img(
     img: Image.Image,
     palette: Palette = Palettes.color,
     width: int = -1,
-    alpha=False,
+    alpha=True,
 ) -> str:
     """Convert image to ascii art using PIL"""
 
