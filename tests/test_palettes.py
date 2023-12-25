@@ -12,7 +12,8 @@ class TestPaletteAscii:
         assert palette.pixel_to_char((0, 0)) == "."
         assert palette.pixel_to_char((255, 0)) == "@"
         assert palette.pixel_to_char((127, 0)) == "+"
-    
+
+
 class TestPaletteGrayscale:
     def test_init(self):
         palette = PaletteGrayscale()
@@ -30,6 +31,7 @@ class TestPaletteGrayscale:
         assert palette.pixel_to_char((0, 0)) == "\033[0;48;5;255m \033[0m"
         assert palette.pixel_to_char((255, 0)) == "\033[0;48;5;232m \033[0m"
         assert palette.pixel_to_char((127, 0)) == "\033[0;48;5;244m \033[0m"
+
 
 class TestPaletteColor:
     def test_init(self):
