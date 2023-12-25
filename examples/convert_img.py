@@ -12,7 +12,7 @@ parser.add_argument(
     default="color",
 )
 parser.add_argument("--width", help="width of output", type=int, default=-1)
-parser.add_argument("--alpha", help="enable transparency", action="store_true")
+parser.add_argument("--alpha", help="enable transparency", type=bool, default=True)
 
 args = parser.parse_args()
 
