@@ -16,5 +16,12 @@ dependencies = ["pillow"]
 [project.urls]
 homepage = "https://github.com/lostways/pil2ansi"
 
+[project.optional-dependencies]
+dev = [
+  "black",
+  "pytest",
+  "mypy"
+]
+
 [tool.black]
 line-length = 79
