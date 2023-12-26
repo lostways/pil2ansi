@@ -65,8 +65,11 @@ class PaletteAscii:
     pil_color: PIL_COLOR = "LA"
     palette_chars = [".", ",", ":", "+", "*", "?", "%", "@"]
 
-    def pixel_to_char(self, pixel: Tuple[int, int]) -> str:
-        p, _ = pixel
+    def pixel_to_color(self, pixel_fg: PIXEL_LA, pixel_bg: PIXEL_LA) -> str:
+        p1, a1 = pixel_fg
+        p2, _ = pixel_bg
+
+        p = p1 if a1 != 0 else p2
 
         num_values = len(self.palette_chars) - 1
         val = round(p * num_values / 255)
@@ -130,13 +133,16 @@ def convert_img(
                 if alpha == False:
                     pixel_fg = pixel_fg[:-1] + (255,)
                     pixel_bg = pixel_bg[:-1] + (255,)
-
                 if pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
                     ascii_str += f"{reset_char}{transparent_char}"
                 elif pixel_fg[-1] == 0:
-                    ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_bg, pixel_bg=pixel_bg)}{unicode_lower_char}"
+                    ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_bg, pixel_bg=pixel_bg)}"
+                    if palette != Palettes.ascii:
+                        ascii_str += unicode_lower_char
                 else:
-                    ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_fg, pixel_bg=pixel_bg)}{unicode_upper_char}"
+                    ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_fg, pixel_bg=pixel_bg)}"
+                    if palette != Palettes.ascii:
+                        ascii_str += unicode_upper_char
             else:
                 continue
 
