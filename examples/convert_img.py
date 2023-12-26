@@ -3,6 +3,8 @@ from pathlib import Path
 from PIL import Image
 from pil2ansi import convert_img, Palettes
 
+#Image.MAX_IMAGE_PIXELS = None
+
 parser = argparse.ArgumentParser(description="Convert image file to ANSI")
 parser.add_argument("img_path", help="path to image file")
 parser.add_argument(
@@ -12,7 +14,7 @@ parser.add_argument(
     default="color",
 )
 parser.add_argument("--width", help="width of output", type=int, default=-1)
-parser.add_argument("--alpha", help="enable transparency", type=bool, default=True)
+parser.add_argument("--alpha", help="enable transparency", type=bool, default=False)
 
 args = parser.parse_args()
 
