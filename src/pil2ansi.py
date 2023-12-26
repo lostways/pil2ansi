@@ -79,7 +79,7 @@ def convert_img(
     img: Image.Image,
     palette: Palette = Palettes.color,
     width: int = -1,
-    alpha=False,
+    alpha=True,
 ) -> str:
     """Convert image to ascii art using PIL"""
 
@@ -110,19 +110,19 @@ def convert_img(
     unicode_upper_char: LiteralString = "\u2580"
     unicode_lower_char: LiteralString = "\u2584"
 
-    #reshape pixels into 2d array
-    pixels_2d = np.reshape(pixels, (img.height, img.width, 4))
 
-    print(f"Image size: {img.width}x{img.height}")
-    print(f"Pixel2D Shape: {pixels_2d.shape}")
-
-    # iternate through pixels_2d and print unicode blocks
-    for i,row in enumerate(pixels_2d):
-        for pixel in row:
-            if pixel[-1] == 0 and alpha == True:
-                ascii_str += transparent_char
+    for i in range(len(pixels) // img.width):
+        for j in range(img.width):
+            if i % 2 == 0:
+                pixel_fg = pixels[i * img.width + j]
+                pixel_bg = pixels[(i + 1) * img.width + j] if i < img.height - 1 else pixel_fg
+                if alpha == True and pixel_bg[-1] == 0:
+                    ascii_str += transparent_char
+                else:
+                    ascii_str += f"{reset_char}{palette.pixel_to_char(pixel_fg=pixel_fg, pixel_bg=pixel_bg)}{unicode_upper_char}"
             else:
-                if i % 2 != 0:
-                    ascii_str += f"{palette.pixel_to_char(pixel_fg=pixel, pixel_bg=pixel)}{unicode_lower_char}"
-        ascii_str += f"{reset_char}"
+                continue
+
+            if j == img.width - 1:
+                ascii_str += reset_char + "\n"
     return ascii_str
