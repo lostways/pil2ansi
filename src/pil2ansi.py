@@ -29,10 +29,13 @@ class PaletteColor:
     pil_color: PIL_COLOR = "RGBA"
 
     def pixel_to_char(self, pixel_fg: PIXEL_RGBA, pixel_bg: PIXEL_RGBA) -> str:
-        r, g, b, _ = pixel_fg
-        r2, g2, b2, _ = pixel_bg
+        r, g, b, a = pixel_fg
+        r2, g2, b2, a2 = pixel_bg
 
-        return f"\033[38;2;{r};{g};{b};48;2;{r2};{g2};{b2}m"
+        format1 = 1 if a == 0 else 2 # 2 is RGB, 1 is transparent
+        format2 = 1 if a2 == 0 else 2 # 2 is RGB, 1 is transparent
+
+        return f"\033[38;{format1};{r};{g};{b};48;{format2};{r2};{g2};{b2}m"
 
 
 @dataclass
@@ -106,7 +109,7 @@ def convert_img(
     pixels = img.getdata()
     ascii_str: str = ""
     reset_char: LiteralString = "\033[0m"
-    transparent_char: LiteralString = f"\033[0m \033[0m"
+    transparent_char: LiteralString = f" "
     unicode_upper_char: LiteralString = "\u2580"
     unicode_lower_char: LiteralString = "\u2584"
 
@@ -116,8 +119,15 @@ def convert_img(
             if i % 2 == 0:
                 pixel_fg = pixels[i * img.width + j]
                 pixel_bg = pixels[(i + 1) * img.width + j] if i < img.height - 1 else pixel_fg
-                if alpha == True and pixel_bg[-1] == 0:
-                    ascii_str += transparent_char
+
+                if alpha == False:
+                    pixel_fg = pixel_fg[:-1] + (255,)
+                    pixel_bg = pixel_bg[:-1] + (255,)
+
+                if pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
+                    ascii_str += f"{reset_char}{transparent_char}{reset_char}"
+                elif pixel_fg[-1] == 0:
+                    ascii_str += f"{reset_char}{palette.pixel_to_char(pixel_fg=pixel_bg, pixel_bg=pixel_bg)}{unicode_lower_char}"
                 else:
                     ascii_str += f"{reset_char}{palette.pixel_to_char(pixel_fg=pixel_fg, pixel_bg=pixel_bg)}{unicode_upper_char}"
             else:
