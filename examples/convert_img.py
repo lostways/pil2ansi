@@ -25,16 +25,15 @@ args = parser.parse_args()
 img_path = Path(args.img_path).as_posix()
 img = Image.open(img_path)
 
-"""
-img: Image.Image = Image.new("RGBA", (4, 4), (255, 0, 0, 255))
+img: Image.Image = Image.new("RGBA", (5, 7), (255, 0, 0, 255))
 img.putpixel((0, 0), (255, 0, 0, 0))
-img.putpixel((0, 3), (255, 0, 0, 0))
-img.putpixel((3, 0), (255, 0, 0, 0))
-img.putpixel((3, 3), (255, 0, 0, 0))
+img.putpixel((0, 6), (255, 0, 0, 0))
+img.putpixel((4, 0), (255, 0, 0, 0))
+img.putpixel((4, 6), (255, 0, 0, 0))
 
 img_data_list = list(img.getdata())
-print(np.array(img_data_list).reshape(4,4,4))
-"""
+print(np.array(img_data_list).reshape(5,7,4))
+
 # convert to ansi
 out = convert_img(
     img=img,
@@ -44,5 +43,5 @@ out = convert_img(
 )
 
 # print to terminal
-#print(repr(out))
+print(repr(out))
 print(out)

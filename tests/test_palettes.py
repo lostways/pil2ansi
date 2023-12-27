@@ -28,16 +28,16 @@ class TestPaletteGrayscale:
         assert palette.pixel_to_color((0, 255), (127, 255)) == "\033[38;5;232;48;5;243m"
         assert palette.pixel_to_color((255, 255), (127, 255)) == "\033[38;5;255;48;5;243m"
         assert palette.pixel_to_color((127, 255), (127, 255)) == "\033[38;5;243;48;5;243m"
-        assert palette.pixel_to_color((127, 0), (127, 255)) == "\033[38;1;243;48;5;243m"
-        assert palette.pixel_to_color((0, 255), (127, 0)) == "\033[38;5;232;48;1;243m"
+        assert palette.pixel_to_color((127, 0), (127, 255)) == "\033[38;1;48;5;243m"
+        assert palette.pixel_to_color((0, 255), (127, 0)) == "\033[38;5;232;48;1m"
 
     def test_pixel_to_char_inverted(self):
         palette = PaletteGrayscale(invert=True)
         assert palette.pixel_to_color((0, 255), (127, 255)) == "\033[38;5;255;48;5;244m"
         assert palette.pixel_to_color((255, 255), (127, 255)) == "\033[38;5;232;48;5;244m"
         assert palette.pixel_to_color((127, 255), (127, 255)) == "\033[38;5;244;48;5;244m"
-        assert palette.pixel_to_color((127, 0), (127, 255)) == "\033[38;1;244;48;5;244m"
-        assert palette.pixel_to_color((0, 255), (127, 0)) == "\033[38;5;255;48;1;244m"
+        assert palette.pixel_to_color((127, 0), (127, 255)) == "\033[38;1;48;5;244m"
+        assert palette.pixel_to_color((0, 255), (127, 0)) == "\033[38;5;255;48;1m"
 
 
 class TestPaletteColor:
@@ -55,10 +55,10 @@ class TestPaletteColor:
 
         assert (
             palette.pixel_to_color((255, 127, 255, 0), (255, 255, 0, 255))
-            == "\033[38;1;255;127;255;48;2;255;255;0m"
+            == "\033[38;1;48;2;255;255;0m"
         )
 
         assert (
             palette.pixel_to_color((255, 127, 255, 255), (255, 255, 0, 0))
-            == "\033[38;2;255;127;255;48;1;255;255;0m"
+            == "\033[38;2;255;127;255;48;1m"
         )

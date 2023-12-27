@@ -32,10 +32,10 @@ class PaletteColor:
         r, g, b, a = pixel_fg
         r2, g2, b2, a2 = pixel_bg
 
-        format1 = 1 if a == 0 else 2  # 2 is RGB, 1 is transparent
-        format2 = 1 if a2 == 0 else 2  # 2 is RGB, 1 is transparent
+        fg_out = f"\033[38;2;{r};{g};{b};" if a != 0 else "\033[38;1;"
+        bg_out = f"48;2;{r2};{g2};{b2}m" if a2 != 0 else "48;1m"
 
-        return f"\033[38;{format1};{r};{g};{b};48;{format2};{r2};{g2};{b2}m"
+        return f"{fg_out}{bg_out}"
 
 
 @dataclass
@@ -47,9 +47,6 @@ class PaletteGrayscale:
         p1, a1 = pixel_fg
         p2, a2 = pixel_bg
 
-        format1 = 1 if a1 == 0 else 5  # 5 is 8-bit, 1 is transparent
-        format2 = 1 if a2 == 0 else 5  # 5 is 8-bit, 1 is transparent
-
         num_values = 23
 
         if self.invert == True:
@@ -59,7 +56,10 @@ class PaletteGrayscale:
             val_fg = 232 + int(p1 * num_values / 255)
             val_bg = 232 + int(p2 * num_values / 255)
 
-        return f"\033[38;{format1};{val_fg};48;{format2};{val_bg}m"
+        fg_out = f"\033[38;5;{val_fg};" if a1 != 0 else "\033[38;1;"
+        bg_out = f"48;5;{val_bg}m" if a2 != 0 else "48;1m"
+
+        return f"{fg_out}{bg_out}"
 
 
 @dataclass
@@ -111,8 +111,8 @@ def convert_img(
     img = img.resize((new_width, new_height), resample=Image.NEAREST)
 
     # crop image to terminal width
-    if new_width > TERMINAL_WIDTH:
-        img = img.crop((0, 0, TERMINAL_WIDTH, new_height))
+    if img.width > TERMINAL_WIDTH:
+        img = img.crop((0, 0, TERMINAL_WIDTH, img.height))
 
     pixels = img.getdata()
 
@@ -132,17 +132,16 @@ def convert_img(
                 if i < img.height - 1:
                     pixel_bg = pixels[(i + 1) * img.width + j]
                 else:
-                    pixel_bg = tuple(
-                        [255 for _ in pixel_fg[:-1]] + [0]
-                    )  # makebg transparent on last row
+                    pixel_bg = tuple(pixel_fg[:-1] + (0,)) # makebg transparent on last row
 
                 if alpha == False:
                     pixel_fg = tuple(pixel_fg[:-1] + (255,))
                     pixel_bg = tuple(pixel_bg[:-1] + (255,))
+
                 if pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
                     ascii_str += f"{reset_char}{transparent_char}"
                 elif pixel_fg[-1] == 0:
-                    ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_bg, pixel_bg=pixel_bg)}"
+                    ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_bg, pixel_bg=pixel_fg)}"
                     if palette != Palettes.ascii:
                         ascii_str += unicode_lower_char
                 else:
