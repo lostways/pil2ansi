@@ -2,7 +2,8 @@ name: Run CI
 
 on:
   push:
-  pull_request: [opened, reopened]
+  pull_request: 
+    types: [opened, reopened]
   workflow_dispatch:
 
 jobs:
