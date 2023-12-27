@@ -132,22 +132,25 @@ def convert_img(
                 if i < img.height - 1:
                     pixel_bg = pixels[(i + 1) * img.width + j]
                 else:
-                    pixel_bg = tuple(pixel_fg[:-1] + (0,)) # makebg transparent on last row
+                    pixel_bg = tuple(pixel_fg[:-1] + (0,)) # make bg transparent on last row
 
                 if alpha == False:
                     pixel_fg = tuple(pixel_fg[:-1] + (255,))
                     pixel_bg = tuple(pixel_bg[:-1] + (255,))
 
-                if pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
+                if palette == Palettes.ascii: 
+                    if pixel_fg[-1] == 0:
+                        ascii_str += f"{reset_char}{transparent_char}"
+                    else:
+                        ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_fg, pixel_bg=pixel_fg)}"
+                elif pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
                     ascii_str += f"{reset_char}{transparent_char}"
                 elif pixel_fg[-1] == 0:
                     ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_bg, pixel_bg=pixel_fg)}"
-                    if palette != Palettes.ascii:
-                        ascii_str += unicode_lower_char
+                    ascii_str += unicode_lower_char
                 else:
                     ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_fg, pixel_bg=pixel_bg)}"
-                    if palette != Palettes.ascii:
-                        ascii_str += unicode_upper_char
+                    ascii_str += unicode_upper_char
             else:
                 continue
 
