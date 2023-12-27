@@ -9,6 +9,7 @@ TERMINAL_HEIGHT = shutil.get_terminal_size().lines
 
 # PIL color modes
 PIL_COLOR = Literal["RGBA", "LA"]
+PIXEL = Tuple[int, ...]
 PIXEL_RGBA = Tuple[int, int, int, int]
 PIXEL_LA = Tuple[int, int]
 
@@ -21,6 +22,7 @@ class Palette(Protocol):
     @property
     def pil_color(self) -> PIL_COLOR:
         ...
+
 
 @dataclass
 class PaletteColor:
@@ -123,16 +125,20 @@ def convert_img(
     for i in range(len(pixels) // img.width):
         for j in range(img.width):
             if i % 2 == 0:
+                pixel_fg: PIXEL
+                pixel_bg: PIXEL
 
-                pixel_fg: Tuple = pixels[i * img.width + j]
+                pixel_fg = pixels[i * img.width + j]
                 if i < img.height - 1:
-                    pixel_bg: Tuple = pixels[(i + 1) * img.width + j] 
-                else: 
-                    pixel_bg: Tuple = (255,255,255,0) if palette.pil_color == "RGBA" else (255,0)
+                    pixel_bg = pixels[(i + 1) * img.width + j]
+                else:
+                    pixel_bg = tuple(
+                        [255 for _ in pixel_fg[:-1]] + [0]
+                    )  # makebg transparent on last row
 
                 if alpha == False:
-                    pixel_fg = pixel_fg[:-1] + (255,)
-                    pixel_bg = pixel_bg[:-1] + (255,)
+                    pixel_fg = tuple(pixel_fg[:-1] + (255,))
+                    pixel_bg = tuple(pixel_bg[:-1] + (255,))
                 if pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
                     ascii_str += f"{reset_char}{transparent_char}"
                 elif pixel_fg[-1] == 0:
