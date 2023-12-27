@@ -1,6 +1,6 @@
 import shutil
 from dataclasses import dataclass
-from typing import Protocol, Tuple, Literal, LiteralString, Union
+from typing import Protocol, Tuple, Literal
 from PIL import Image
 
 # Get terminal width/height
@@ -116,10 +116,10 @@ def convert_img(
 
     pixels = img.getdata()
 
-    reset_char: LiteralString = "\033[0m"
-    transparent_char: LiteralString = f" "
-    unicode_upper_char: LiteralString = "\u2580"
-    unicode_lower_char: LiteralString = "\u2584"
+    reset_char: str = "\033[0m"
+    transparent_char: str = f" "
+    unicode_upper_char: str = "\u2580"
+    unicode_lower_char: str = "\u2584"
 
     ascii_str: str = ""
     for i in range(len(pixels) // img.width):
