@@ -2,12 +2,12 @@ from pil2ansi import PaletteAscii, PaletteColor, PaletteGrayscale
 
 
 class TestPaletteAscii:
-    def test_init(self):
+    def test_init(self) -> None:
         palette = PaletteAscii()
         assert palette.pil_color == "LA"
         assert palette.palette_chars == [".", ",", ":", "+", "*", "?", "%", "@"]
 
-    def test_pixel_to_color(self):
+    def test_pixel_to_color(self) -> None:
         palette = PaletteAscii()
         assert palette.pixel_to_color((0, 255), (0, 0)) == "."
         assert palette.pixel_to_color((255, 255), (0, 0)) == "@"
@@ -18,12 +18,12 @@ class TestPaletteAscii:
 
 
 class TestPaletteGrayscale:
-    def test_init(self):
+    def test_init(self) -> None:
         palette = PaletteGrayscale()
         assert palette.pil_color == "LA"
         assert palette.invert == False
 
-    def test_pixel_to_color(self):
+    def test_pixel_to_color(self) -> None:
         palette = PaletteGrayscale()
         assert palette.pixel_to_color((0, 255), (127, 255)) == "\033[38;5;232;48;5;243m"
         assert palette.pixel_to_color((255, 255), (127, 255)) == "\033[38;5;255;48;5;243m"
@@ -31,7 +31,7 @@ class TestPaletteGrayscale:
         assert palette.pixel_to_color((127, 0), (127, 255)) == "\033[38;1;48;5;243m"
         assert palette.pixel_to_color((0, 255), (127, 0)) == "\033[38;5;232;48;1m"
 
-    def test_pixel_to_char_inverted(self):
+    def test_pixel_to_char_inverted(self) -> None:
         palette = PaletteGrayscale(invert=True)
         assert palette.pixel_to_color((0, 255), (127, 255)) == "\033[38;5;255;48;5;244m"
         assert palette.pixel_to_color((255, 255), (127, 255)) == "\033[38;5;232;48;5;244m"
@@ -41,11 +41,11 @@ class TestPaletteGrayscale:
 
 
 class TestPaletteColor:
-    def test_init(self):
+    def test_init(self) -> None:
         palette = PaletteColor()
         assert palette.pil_color == "RGBA"
 
-    def test_pixel_to_char(self):
+    def test_pixel_to_char(self) -> None:
         palette = PaletteColor()
 
         assert (

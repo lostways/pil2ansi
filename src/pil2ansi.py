@@ -128,7 +128,9 @@ def convert_img(
             pixel_bg: PIXEL
 
             pixel_fg = pixels[i * img.width + j]
-            pixel_bg = pixels[(i + 1) * img.width + j] if i != img.height - 1 else pixel_fg
+            pixel_bg = (
+                pixels[(i + 1) * img.width + j] if i != img.height - 1 else pixel_fg
+            )
 
             if alpha == False:
                 pixel_fg = tuple(pixel_fg[:-1] + (255,))
@@ -142,7 +144,9 @@ def convert_img(
             elif i % 2 == 0:
                 # handle last row
                 if i == img.height - 1:
-                    pixel_bg = tuple(pixel_bg[:-1] + (0,)) # make bg transparent on last row
+                    pixel_bg = tuple(
+                        pixel_bg[:-1] + (0,)
+                    )  # make bg transparent on last row
 
                 if pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
                     ascii_str += f"{reset_char}{transparent_char}"
