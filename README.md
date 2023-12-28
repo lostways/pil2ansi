@@ -1,7 +1,7 @@
 # Pil2ANSI
 Library for converting Pillow images to ANSI art
 
-![pil2ansi](https://github.com/lostways/pil2ansi/assets/1101232/a262483b-674b-4271-a072-1948758ae5f8)
+![pil2ansi3](https://github.com/lostways/pil2ansi/assets/1101232/f92f210f-5e08-4a59-831d-47d6d9aa5c59)
 
 # Getting Started
 
@@ -11,7 +11,7 @@ pip install pil2ansi
 ```
 
 ## Examples
-Check out the [Convert Image Example](examples/convert_img.py).
+Check out the [Convert Image Example](https://github.com/lostways/pil2ansi/blob/master/examples/convert_img.py).
 ```
 convert_img.py [-h] [--palette {color,grayscale,grayscale_inverted,ascii}] [--width WIDTH] [--alpha ALPHA] img_path
 ```
