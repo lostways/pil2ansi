@@ -71,7 +71,7 @@ class PaletteAscii:
         p1, a1 = pixel_fg
         p2, _ = pixel_bg
 
-        p = p1 if a1 != 0 else p2
+        p = p2 if a1 == 0 else p1
 
         num_values = len(self.palette_chars) - 1
         val = round(p * num_values / 255)
@@ -122,28 +122,29 @@ def convert_img(
     unicode_lower_char: str = "\u2584"
 
     ascii_str: str = ""
-    for i in range(len(pixels) // img.width):
+    for i in range(img.height):
         for j in range(img.width):
-            if i % 2 == 0:
-                pixel_fg: PIXEL
-                pixel_bg: PIXEL
+            pixel_fg: PIXEL
+            pixel_bg: PIXEL
 
-                pixel_fg = pixels[i * img.width + j]
-                if i < img.height - 1:
-                    pixel_bg = pixels[(i + 1) * img.width + j]
+            pixel_fg = pixels[i * img.width + j]
+            pixel_bg = pixels[(i + 1) * img.width + j] if i != img.height - 1 else pixel_fg
+
+            if alpha == False:
+                pixel_fg = tuple(pixel_fg[:-1] + (255,))
+                pixel_bg = tuple(pixel_bg[:-1] + (255,))
+
+            if palette == Palettes.ascii and (i % 2 == 0 or i == img.height - 1):
+                if pixel_fg[-1] == 0 and alpha == True:
+                    ascii_str += f"{reset_char}{transparent_char}"
                 else:
-                    pixel_bg = tuple(pixel_fg[:-1] + (0,)) # make bg transparent on last row
+                    ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_fg, pixel_bg=pixel_bg)}"
+            elif i % 2 == 0:
+                # handle last row
+                if i == img.height - 1:
+                    pixel_bg = tuple(pixel_bg[:-1] + (0,)) # make bg transparent on last row
 
-                if alpha == False:
-                    pixel_fg = tuple(pixel_fg[:-1] + (255,))
-                    pixel_bg = tuple(pixel_bg[:-1] + (255,))
-
-                if palette == Palettes.ascii: 
-                    if pixel_fg[-1] == 0:
-                        ascii_str += f"{reset_char}{transparent_char}"
-                    else:
-                        ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_fg, pixel_bg=pixel_fg)}"
-                elif pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
+                if pixel_fg[-1] == 0 and pixel_bg[-1] == 0:
                     ascii_str += f"{reset_char}{transparent_char}"
                 elif pixel_fg[-1] == 0:
                     ascii_str += f"{reset_char}{palette.pixel_to_color(pixel_fg=pixel_bg, pixel_bg=pixel_fg)}"
