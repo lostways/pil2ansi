@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pil2ansi"
-version = "0.0.1-dev3"
+version = "0.0.1-dev4"
 description = "Convert PIL images to ANSI art"
 readme = "README.md"
 authors = [{ name = "lostways", email = "andrew@lostways.com" }]
