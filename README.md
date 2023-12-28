@@ -13,7 +13,7 @@ pip install pil2ansi
 ## Examples
 Check out the [Convert Image Example](https://github.com/lostways/pil2ansi/blob/master/examples/convert_img.py).
 ```
-convert_img.py [-h] [--palette {color,grayscale,grayscale_inverted,ascii}] [--width WIDTH] [--alpha ALPHA] img_path
+convert_img.py [-h] [--palette {color,grayscale,grayscale_inverted,ascii}] [--width WIDTH] [--no-alpha] img_path
 ```
 
 # Usage
