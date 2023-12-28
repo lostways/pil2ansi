@@ -1,0 +1,27 @@
+name: Run CI
+
+on:
+  push:
+  pull_request: 
+    types: [opened, reopened]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Install dev requirements
+        run: make dev
+
+      - name: Linter and formatting
+        run: make lint
+
+      - name: Run tests
+        run: make test
