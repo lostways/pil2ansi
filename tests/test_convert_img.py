@@ -190,7 +190,7 @@ class TestConvertImg:
 
     def test_convert_img_ascii_2x2(self):
         img: Image.Image = Image.new("RGBA", (2, 2), (255, 0, 0, 255))
-        expected_out: str = self.ASCII_red_out * 2 + self.end_row_out
+        expected_out: str = (self.ASCII_red_out * 2 + self.end_row_out) * 2
         out = convert_img(img, Palettes.ascii)
 
         assert len(img.getdata()) == 4
@@ -199,7 +199,7 @@ class TestConvertImg:
 
     def test_convert_img_ascii_4x4(self):
         img: Image.Image = Image.new("RGBA", (4, 4), (255, 0, 0, 255))
-        expected_out: str = (self.ASCII_red_out * 4 + self.end_row_out) * 2
+        expected_out: str = (self.ASCII_red_out * 4 + self.end_row_out) * 3
         out = convert_img(img, Palettes.ascii)
 
         assert len(img.getdata()) == 16
@@ -231,6 +231,12 @@ class TestConvertImg:
         )
         expected_out += (
             (self.ASCII_red_out * 4) 
+            + self.end_row_out
+        )
+        expected_out += (
+            self.ASCII_alpha_out
+            + (self.ASCII_red_out * 2)
+            + self.ASCII_alpha_out
             + self.end_row_out
         )
         out = convert_img(img, Palettes.ascii, alpha=True)
